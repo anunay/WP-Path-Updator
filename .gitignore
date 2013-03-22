@@ -49,4 +49,8 @@ sitemap.xml
 wp-content/cache/
 wp-content/backups/
 sitemap.xml
+<<<<<<< HEAD
 sitemap.xml.gz
+=======
+sitemap.xml.gz
+>>>>>>> Update .gitignore with more extensions

@@ -51,186 +51,180 @@ function updateWidgetURL($widgets_values,$oldurl,$newurl){
 	
 
 ### Form Processing 
-if(!empty($_POST['do'])) {
+if(!empty($_POST['do'])) {	
+	$site_url       = @$_POST['siteurl'];
+	$site_title 	= @$_POST['sitename'];
+	$site_email 	= @$_POST['siteemail'];
 	
-		$site_url 		= @$_POST['siteurl'];
-		$site_title 	= @$_POST['sitename'];
-		$site_email 	= @$_POST['siteemail'];
-		
-		$companyname 	= @$_POST['companyname'];
-		$state 			= @$_POST['state'];
-		
-		$old_url 		= @$_POST['old_url'];
-		$new_url 		= $site_url;
-		
-		$change_password_request = @$_POST['changepass'];
-		
-		$add_tos_and_privacy = @$_POST['addpptos'];
-		
-		$findtext = @$_POST['findtext'];
-		$replacetext = @$_POST['replacetext'];
-		
-		
-		$queries = array();
-		$tbl_options = $wpdb->prefix."options";
-		$tbl_posts  = $wpdb->prefix."posts";
-		
-		$queries[] 	= "UPDATE {$tbl_options} SET option_value = '{$new_url}' WHERE option_name = 'home' OR option_name = 'siteurl';";		
-		$queries[] 	= "UPDATE {$tbl_options} SET option_value = '{$site_title}' WHERE option_name = 'blogname';";		
-		$queries[] 	= "UPDATE {$tbl_options} SET option_value = '{$site_email}' WHERE option_name = 'admin_email';";		
-		$queries[] 	= "UPDATE {$tbl_posts} SET guid = replace(guid, '{$old_url}','{$new_url}');";
-		$queries[]	= "UPDATE {$tbl_posts} SET post_content = replace(post_content, '{$old_url}', '{$new_url}');";
-		$queries[]	= "UPDATE {$tbl_posts} SET post_content = replace(post_content, '{##COMPANYNAME##}', '{$companyname}');";
-		$queries[]	= "UPDATE {$tbl_posts} SET post_content = replace(post_content, '{##COMPANYSTATE##}', '{$state}');";
-		$queries[]	= "UPDATE {$tbl_posts} SET post_content = replace(post_content, '{##SITETITLE##}', '{$site_title}');";
-		$queries[]	= "UPDATE {$tbl_posts} SET post_content = replace(post_content, '{##SITEEMAIL##}', '{$site_email}');";
-		
-		
-		foreach($findtext as $key=>$value){
-			if(isset($value) && @$value!="" && strlen($value) > 0){
-				$queries[] = "UPDATE {$tbl_posts} SET post_content = replace(post_content, '{$value}', '" . $replacetext[$key] . "');";
-			}
-		}
-		
-		
-		if(isset($change_password_request) && $change_password_request){
-			if(@$_POST['adminpass']!="" && isset($_POST['adminpass'])){
-				$userpassword = @$_POST['adminpass'];
-				$queries[] = "UPDATE wp_users SET user_pass = MD5( '{$userpassword}' ) WHERE user_login = 'admin';";
-			}
-		}
-		
-		
-		$terms_of_service = '<h3>1. Terms</h3>
-								<p>
-									By accessing this web site, you are agreeing to be bound by these 
-									web site Terms and Conditions of Use, all applicable laws and regulations, 
-									and agree that you are responsible for compliance with any applicable local 
-									laws. If you do not agree with any of these terms, you are prohibited from 
-									using or accessing this site. The materials contained in this web site are 
-									protected by applicable copyright and trade mark law.
-								</p>
-
-								<h3>2. Use License</h3>
-
-								<ol type="a">
-									<li>
-										Permission is granted to temporarily download one copy of the materials 
-										(information or software) on {##COMPANYNAME##}\'s web site for personal, 
-										non-commercial transitory viewing only. This is the grant of a license, 
-										not a transfer of title, and under this license you may not:
-										
-										<ol type="i">
-											<li>modify or copy the materials;</li>
-											<li>use the materials for any commercial purpose, or for any public display (commercial or non-commercial);</li>
-											<li>attempt to decompile or reverse engineer any software contained on {##COMPANYNAME##}\'s web site;</li>
-											<li>remove any copyright or other proprietary notations from the materials; or</li>
-											<li>transfer the materials to another person or "mirror" the materials on any other server.</li>
-										</ol>
-									</li>
-									<li>
-										This license shall automatically terminate if you violate any of these restrictions and may be terminated by {##COMPANYNAME##} at any time. Upon terminating your viewing of these materials or upon the termination of this license, you must destroy any downloaded materials in your possession whether in electronic or printed format.
-									</li>
-								</ol>
-
-								<h3>3. Disclaimer</h3>
-
-								<ol type="a">
-									<li>The materials on {##COMPANYNAME##}\'s web site are provided "as is". {##COMPANYNAME##} makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties, including without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights. Further, {##COMPANYNAME##} does not warrant or make any representations concerning the accuracy, likely results, or reliability of the use of the materials on its Internet web site or otherwise relating to such materials or on any sites linked to this site.</li>
-								</ol>
-
-								<h3>4. Limitations</h3>
-
-								<p>In no event shall {##COMPANYNAME##} or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption,) arising out of the use or inability to use the materials on {##COMPANYNAME##}\'s Internet site, even if {##COMPANYNAME##} or a {##COMPANYNAME##} authorized representative has been notified orally or in writing of the possibility of such damage. Because some jurisdictions do not allow limitations on implied warranties, or limitations of liability for consequential or incidental damages, these limitations may not apply to you.</p>
-										
-								<h3>5. Revisions and Errata</h3>
-
-								<p>The materials appearing on {##COMPANYNAME##}\'s web site could include technical, typographical, or photographic errors. {##COMPANYNAME##} does not warrant that any of the materials on its web site are accurate, complete, or current. {##COMPANYNAME##} may make changes to the materials contained on its web site at any time without notice. {##COMPANYNAME##} does not, however, make any commitment to update the materials.</p>
-
-								<h3>6. Links</h3>
-
-								<p>{##COMPANYNAME##} has not reviewed all of the sites linked to its Internet web site and is not responsible for the contents of any such linked site. The inclusion of any link does not imply endorsement by {##COMPANYNAME##} of the site. Use of any such linked web site is at the user\'s own risk.</p>
-
-								<h3>7. Site Terms of Use Modifications</h3>
-
-								<p>{##COMPANYNAME##} may revise these terms of use for its web site at any time without notice. By using this web site you are agreeing to be bound by the then current version of these Terms and Conditions of Use.</p>
-
-								<h3>8. Governing Law</h3>
-
-								<p>Any claim relating to {##COMPANYNAME##}\'s web site shall be governed by the laws of the State of {##COMPANYSTATE##} without regard to its conflict of law provisions.</p>
-
-								<p>	General Terms and Conditions applicable to Use of a Web Site.</p>
-';
-
-		$terms_of_service = preg_replace(array("/{##COMPANYNAME##}/","/{##COMPANYSTATE##}/"),array($companyname,$state),$terms_of_service);
-		
-		
-		$privacy_policy = '<h2>Privacy Policy</h2>
-<p>Your privacy is very important to us. Accordingly, we have developed this Policy in order for you to understand how we collect, use, communicate and disclose and make use of personal information. The following outlines our privacy policy.</p>
-<ul>
-	<li>Before or at the time of collecting personal information, we will identify the purposes for which information is being collected.</li>
-	<li>We will collect and use of personal information solely with the objective of fulfilling those purposes specified by us and for other compatible purposes, unless we obtain the consent of the individual concerned or as required by law.</li>
-	<li>We will only retain personal information as long as necessary for the fulfillment of those purposes.</li>
-	<li>We will collect personal information by lawful and fair means and, where appropriate, with the knowledge or consent of the individual concerned.</li>
-	<li>Personal data should be relevant to the purposes for which it is to be used, and, to the extent necessary for those purposes, should be accurate, complete, and up-to-date.</li>
-	<li>We will protect personal information by reasonable security safeguards against loss or theft, as well as unauthorized access, disclosure, copying, use or modification.</li>
-	<li>We will make readily available to customers information about our policies and practices relating to the management of personal information.</li>
-</ul>
-<p>We are committed to conducting our business in accordance with these principles in order to ensure that the confidentiality of personal information is protected and maintained.</p>';
-		
-		
-		
-		
-		if($add_tos_and_privacy && isset($add_tos_and_privacy)){
-			/* Terms of Service */
-			$tos_page = array(
-				'post_title' => 'Terms of Service',
-				'post_content' => $terms_of_service,
-				'post_status' => 'publish',
-				'post_date' => date('Y-m-d H:i:s'),
-				'post_author' => 1,
-				'post_type' => 'page',
-				'post_category' => array(0)
-			);
-			$tos_page_id = wp_insert_post($tos_page);		
-			
-			
-			/* Privacy Policy */
-			$privacy_policy_page = array(
-				'post_title' => 'Privacy Policy',
-				'post_content' => $privacy_policy,
-				'post_status' => 'publish',
-				'post_date' => date('Y-m-d H:i:s'),
-				'post_author' => 1,
-				'post_type' => 'page',
-				'post_category' => array(0)
-			);
-			$privacy_page_id = wp_insert_post($privacy_policy_page);			
-		}
-		
-		
-		$query_count = 1;
-		$query_error_count = 0;
-		$error_query = array();
-
-		foreach($queries as $query){
-			if($wpdb->query($query)){
-				$query_count++;
-			}else{
-				//$error_query[$query_error_count++] = $query;
-			}
-		}
-
-		if($query_error_count > 0 ) {
-			$text .= '<p style="color: red;">'.sprintf(__('Error executing queries  \'%s\'.'), implode("<br />",$error_query)).'</p>';
-		}else{
-			$text .= '<p style="color: green;">'.sprintf(__('Queries executed successfully.'), implode("<br />",$queries)).'</p>';
-		}
-		
-		
-
+	$companyname 	= @$_POST['companyname'];
+	$state 			= @$_POST['state'];
 	
-}
+	$old_url 		= @$_POST['old_url'];
+	$new_url 		= $site_url;
+	
+	$change_password_request = @$_POST['changepass'];
+	
+	$add_tos_and_privacy = @$_POST['addpptos'];
+	
+	$findtext = @$_POST['findtext'];
+	$replacetext = @$_POST['replacetext'];
+	
+	
+	$queries = array();
+	$tbl_options = $wpdb->prefix."options";
+	$tbl_posts  = $wpdb->prefix."posts";
+	
+	$queries[] 	= "UPDATE {$tbl_options} SET option_value = '{$new_url}' WHERE option_name = 'home' OR option_name = 'siteurl';";		
+	$queries[] 	= "UPDATE {$tbl_options} SET option_value = '{$site_title}' WHERE option_name = 'blogname';";		
+	$queries[] 	= "UPDATE {$tbl_options} SET option_value = '{$site_email}' WHERE option_name = 'admin_email';";		
+	$queries[] 	= "UPDATE {$tbl_posts} SET guid = replace(guid, '{$old_url}','{$new_url}');";
+	$queries[]	= "UPDATE {$tbl_posts} SET post_content = replace(post_content, '{$old_url}', '{$new_url}');";
+	$queries[]	= "UPDATE {$tbl_posts} SET post_content = replace(post_content, '{##COMPANYNAME##}', '{$companyname}');";
+	$queries[]	= "UPDATE {$tbl_posts} SET post_content = replace(post_content, '{##COMPANYSTATE##}', '{$state}');";
+	$queries[]	= "UPDATE {$tbl_posts} SET post_content = replace(post_content, '{##SITETITLE##}', '{$site_title}');";
+	$queries[]	= "UPDATE {$tbl_posts} SET post_content = replace(post_content, '{##SITEEMAIL##}', '{$site_email}');";
+	
+	
+	foreach($findtext as $key=>$value){
+		if(isset($value) && @$value!="" && strlen($value) > 0){
+			$queries[] = "UPDATE {$tbl_posts} SET post_content = replace(post_content, '{$value}', '" . $replacetext[$key] . "');";
+		}
+	}
+	
+	
+	if(isset($change_password_request) && $change_password_request){
+		if(@$_POST['adminpass']!="" && isset($_POST['adminpass'])){
+			$userpassword = @$_POST['adminpass'];
+			$queries[] = "UPDATE wp_users SET user_pass = MD5( '{$userpassword}' ) WHERE user_login = 'admin';";
+		}
+	}
+		
+		
+  $terms_of_service = '<h3>1. Terms</h3>
+  	<p>
+  		By accessing this web site, you are agreeing to be bound by these 
+  		web site Terms and Conditions of Use, all applicable laws and regulations, 
+  		and agree that you are responsible for compliance with any applicable local 
+  		laws. If you do not agree with any of these terms, you are prohibited from 
+  		using or accessing this site. The materials contained in this web site are 
+  		protected by applicable copyright and trade mark law.
+  	</p>
+
+  	<h3>2. Use License</h3>
+
+  	<ol type="a">
+  		<li>
+  			Permission is granted to temporarily download one copy of the materials 
+  			(information or software) on {##COMPANYNAME##}\'s web site for personal, 
+  			non-commercial transitory viewing only. This is the grant of a license, 
+  			not a transfer of title, and under this license you may not:
+  			
+  			<ol type="i">
+  				<li>modify or copy the materials;</li>
+  				<li>use the materials for any commercial purpose, or for any public display (commercial or non-commercial);</li>
+  				<li>attempt to decompile or reverse engineer any software contained on {##COMPANYNAME##}\'s web site;</li>
+  				<li>remove any copyright or other proprietary notations from the materials; or</li>
+  				<li>transfer the materials to another person or "mirror" the materials on any other server.</li>
+  			</ol>
+  		</li>
+  		<li>
+  			This license shall automatically terminate if you violate any of these restrictions and may be terminated by {##COMPANYNAME##} at any time. Upon terminating your viewing of these materials or upon the termination of this license, you must destroy any downloaded materials in your possession whether in electronic or printed format.
+  		</li>
+  	</ol>
+
+  	<h3>3. Disclaimer</h3>
+
+  	<ol type="a">
+  		<li>The materials on {##COMPANYNAME##}\'s web site are provided "as is". {##COMPANYNAME##} makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties, including without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights. Further, {##COMPANYNAME##} does not warrant or make any representations concerning the accuracy, likely results, or reliability of the use of the materials on its Internet web site or otherwise relating to such materials or on any sites linked to this site.</li>
+  	</ol>
+
+  	<h3>4. Limitations</h3>
+
+  	<p>In no event shall {##COMPANYNAME##} or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption,) arising out of the use or inability to use the materials on {##COMPANYNAME##}\'s Internet site, even if {##COMPANYNAME##} or a {##COMPANYNAME##} authorized representative has been notified orally or in writing of the possibility of such damage. Because some jurisdictions do not allow limitations on implied warranties, or limitations of liability for consequential or incidental damages, these limitations may not apply to you.</p>
+  			
+  	<h3>5. Revisions and Errata</h3>
+
+  	<p>The materials appearing on {##COMPANYNAME##}\'s web site could include technical, typographical, or photographic errors. {##COMPANYNAME##} does not warrant that any of the materials on its web site are accurate, complete, or current. {##COMPANYNAME##} may make changes to the materials contained on its web site at any time without notice. {##COMPANYNAME##} does not, however, make any commitment to update the materials.</p>
+
+  	<h3>6. Links</h3>
+
+  	<p>{##COMPANYNAME##} has not reviewed all of the sites linked to its Internet web site and is not responsible for the contents of any such linked site. The inclusion of any link does not imply endorsement by {##COMPANYNAME##} of the site. Use of any such linked web site is at the user\'s own risk.</p>
+
+  	<h3>7. Site Terms of Use Modifications</h3>
+
+  	<p>{##COMPANYNAME##} may revise these terms of use for its web site at any time without notice. By using this web site you are agreeing to be bound by the then current version of these Terms and Conditions of Use.</p>
+
+  	<h3>8. Governing Law</h3>
+
+  	<p>Any claim relating to {##COMPANYNAME##}\'s web site shall be governed by the laws of the State of {##COMPANYSTATE##} without regard to its conflict of law provisions.</p>
+
+  	<p>	General Terms and Conditions applicable to Use of a Web Site.</p>
+  ';
+
+  $terms_of_service = preg_replace(array("/{##COMPANYNAME##}/","/{##COMPANYSTATE##}/"),array($companyname,$state),$terms_of_service);
+  		
+  		
+  $privacy_policy = '<h2>Privacy Policy</h2>
+    <p>Your privacy is very important to us. Accordingly, we have developed this Policy in order for you to understand how we collect, use, communicate and disclose and make use of personal information. The following outlines our privacy policy.</p>
+    <ul>
+    	<li>Before or at the time of collecting personal information, we will identify the purposes for which information is being collected.</li>
+    	<li>We will collect and use of personal information solely with the objective of fulfilling those purposes specified by us and for other compatible purposes, unless we obtain the consent of the individual concerned or as required by law.</li>
+    	<li>We will only retain personal information as long as necessary for the fulfillment of those purposes.</li>
+    	<li>We will collect personal information by lawful and fair means and, where appropriate, with the knowledge or consent of the individual concerned.</li>
+    	<li>Personal data should be relevant to the purposes for which it is to be used, and, to the extent necessary for those purposes, should be accurate, complete, and up-to-date.</li>
+    	<li>We will protect personal information by reasonable security safeguards against loss or theft, as well as unauthorized access, disclosure, copying, use or modification.</li>
+    	<li>We will make readily available to customers information about our policies and practices relating to the management of personal information.</li>
+    </ul>
+    <p>We are committed to conducting our business in accordance with these principles in order to ensure that the confidentiality of personal information is protected and maintained.</p>';
+  		
+  		
+  		
+  		
+  if($add_tos_and_privacy && isset($add_tos_and_privacy)){
+    /* Terms of Service */
+    $tos_page = array(
+    	'post_title' => 'Terms of Service',
+    	'post_content' => $terms_of_service,
+    	'post_status' => 'publish',
+    	'post_date' => date('Y-m-d H:i:s'),
+    	'post_author' => 1,
+    	'post_type' => 'page',
+    	'post_category' => array(0)
+    );
+    $tos_page_id = wp_insert_post($tos_page);		
+
+
+    /* Privacy Policy */
+    $privacy_policy_page = array(
+    	'post_title' => 'Privacy Policy',
+    	'post_content' => $privacy_policy,
+    	'post_status' => 'publish',
+    	'post_date' => date('Y-m-d H:i:s'),
+    	'post_author' => 1,
+    	'post_type' => 'page',
+    	'post_category' => array(0)
+    );
+    $privacy_page_id = wp_insert_post($privacy_policy_page);			
+  }
+
+  $query_count = 1;
+  $query_error_count = 0;
+  $error_query = array();
+
+  foreach($queries as $query){
+    if($wpdb->query($query)){
+    	$query_count++;
+    }else{
+    	//$error_query[$query_error_count++] = $query;
+    }
+  }
+
+  if($query_error_count > 0 ) {
+    $text .= '<p style="color: red;">'.sprintf(__('Error executing queries  \'%s\'.'), implode("<br />",$error_query)).'</p>';
+  }else{
+    $text .= '<p style="color: green;">'.sprintf(__('Queries executed successfully.'), implode("<br />",$queries)).'</p>';
+  }	
+} // end form processing.
 
 ### Display Form
 ?>

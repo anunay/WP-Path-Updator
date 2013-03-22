@@ -10,6 +10,5 @@ For example:
 
 Then follow the instruction and your'r done.
 
-## PLEASE MAKE SURE TO GET A BACKUP OF YOUR DATABASE. 
-
-## USE AT YOUR OWN RISK. 
+PLEASE MAKE SURE TO GET A BACKUP OF YOUR DATABASE. 
+USE AT YOUR OWN RISK. 
